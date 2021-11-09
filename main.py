@@ -5,20 +5,24 @@ class Conversion:
     def __init__(self):
         self.original = open('original.txt', 'r', encoding='utf-8')
         self.result = open('result.txt', 'w+', encoding='utf-8')
-        self.background = []
-        self.bgm = []
-        self.standing = []
+        self.background = []  # 记录已经出现的背景，方便调用隐藏图像
+        self.bgm = []   # 记录已经出现的bgm，方便隐藏
+        self.standing = []   # 记录已经出现的立绘，方便隐藏
 
     @staticmethod
-    def head(line: str, span: tuple[int, int]) -> str:
+    def eager_execution_block(line: str, span: tuple[int, int]) -> str:
         """将标题行转换为提前代码块"""
         cn_num = {'一': '1', '二': '2', '三': '3', '四': '4', '五': '5', '六': '6', '七': '7', '八': '8', '九': '9'}
         result = "@<|\n" \
                  "label('ch%s', '%s')\n" \
-                 "is_default_start()\n" \
                  "|>\n" \
                  % (cn_num[line[span[0] + 1: span[1] - 1]], line)
         return result
+
+    @staticmethod
+    def lazy_execution_block():
+        # todo: 延迟代码块的加载，包括立绘、场景、bgm
+        pass
 
     def main(self):
         """主程序"""
@@ -30,7 +34,7 @@ class Conversion:
             line = line.strip('\n')  # 删除末尾的换行符
             if re.match('第(.*?)章', line):  # 匹配文件开头的章节名
                 span = re.match('第(.*?)章', line).span()
-                self.result.write(self.head(line, span))
+                self.result.write(self.eager_execution_block(line, span))
                 line = self.original.readline()
                 continue
             if re.match('【(.*?)】', line):  # 匹配场景配置
