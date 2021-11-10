@@ -7,14 +7,6 @@ class Conversion:
     def __init__(self):
         self.original = open('original.txt', 'r', encoding='utf-8')
         self.result = open('result.txt', 'w+', encoding='utf-8')
-        self.background = []
-        self.bgm = []
-        self.standing = []
-        self.ch_change = {'贝拉': 'Bella', '向晚': 'Ava', '珈乐': 'Carol', '嘉然': 'Diana', '乃琳': 'Queen', '阿草': 'Acao', '男人': 'Man', '女人': 'Women', '男孩': 'Boy', '女孩': 'Girl'}
-        self.cloth_change = {'常服':'causal','舞蹈服':'dance','团服':'team','画家':'draw'};
-        self.apperence_change = {'通常':'causal','生气':'angry','微笑':'smile','惊讶':'surprised','失望':'disappointed'}
-        self.standing_now = [];
-        #self.diana_cloth = {'常服':'causal','画家':'draw','团服':'team'}；
         self.line_num = 0  # 统计行数
 
     @staticmethod
@@ -64,13 +56,13 @@ class Conversion:
                     print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 else None
                 else:
                     print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
-            elif '场景' in block:
+            if '场景' in block:
                 # todo: 转换场景的代码
                 print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
-            elif 'bgm' in block:
+            if 'bgm' in block:
                 # todo: 转换bgm的代码
                 print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
-            elif '音效' in block:
+            if '音效' in block:
                 # todo: 转换音效的代码
                 print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
             else:
@@ -96,24 +88,6 @@ class Conversion:
                 print('\033[32mSUCCESS\033[0m | 提前代码块：%s' % line) if debug > 0 else None
                 line = self.original.readline()
                 continue
-            if re.match('【.*?】',line):
-            	print('<|');
-            	if re.match('【立绘：无立绘】', line):  # 匹配场景配置
-                	line = self.original.readline()
-                	continue
-            	else : 
-            		if re.match('【立绘：(.*?)-(.*?)-(.*?)】', line):  # 匹配场景配置
-            			listofcharac = re.findall('【立绘：(.*?)-(.*?)-(.*?)】', line);
-            			if len(self.standing_now) > 0 :
-            				print('hide(' + self.ch_change[self.standing_now[0][0]] + ')');
-            			#print(self.ch_change['贝拉']);
-            			#print(self.ch_change[listofcharac[0][0]],self.cloth_change[listofcharac[0][1]] + '_' + self.apperence_change[listofcharac[0][2]]);
-            			print('show(' + self.ch_change[listofcharac[0][0]] + ', ' +'"' +  self.cloth_change[listofcharac[0][1]] + '_' + self.apperence_change[listofcharac[0][2]] + '"' + ', '+ 'pos_c' + ')');
-            			self.standing_now = listofcharac;
-
-            			line = self.original.readline()
-            			continue
-            	print('|>')
             if re.match('【(.*?)】', line):  # 匹配场景配置
                 a = self.lazy_execution_block(line)
                 print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 and a is not None else None
