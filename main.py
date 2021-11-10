@@ -11,6 +11,7 @@ class Conversion:
         self.ch_change = {'贝拉': 'Bella', '向晚': 'Ava', '珈乐': 'Carol', '嘉然': 'Diana', '乃琳': 'Queen', '阿草': 'Acao', '男人': 'Man', '女人': 'Women', '男孩': 'Boy', '女孩': 'Girl'}
         self.cloth_change = {'常服':'causal','舞蹈服':'dance','团服':'team','画家':'draw'};
         self.apperence_change = {'通常':'causal','生气':'angry','微笑':'smile','惊讶':'surprised','失望':'disappointed'}
+        self.standing_now = [];
         #self.diana_cloth = {'常服':'causal','画家':'draw','团服':'team'}；
 
     @staticmethod
@@ -50,17 +51,24 @@ class Conversion:
                 self.result.write(self.head(line, span))
                 line = self.original.readline()
                 continue
-            if re.match('【立绘：无立绘】', line):  # 匹配场景配置
-                line = self.original.readline()
-                continue
-            else : 
-            	if re.match('【立绘：(.*?)-(.*?)-(.*?)】', line):  # 匹配场景配置
-            		listofcharac = re.findall('【立绘：(.*?)-(.*?)-(.*?)】', line);
-            		#print(self.ch_change['贝拉']);
-            		#print(self.ch_change[listofcharac[0][0]],self.cloth_change[listofcharac[0][1]] + '_' + self.apperence_change[listofcharac[0][2]]);
-            		print('show(' + self.ch_change[listofcharac[0][0]] + ',' +'"' +  self.cloth_change[listofcharac[0][1]] + '_' + self.apperence_change[listofcharac[0][2]] + '"' + ','+ 'pos_c' + ')');
-            		line = self.original.readline()
-            		continue
+            if re.match('【.*?】',line):
+            	print('<|');
+            	if re.match('【立绘：无立绘】', line):  # 匹配场景配置
+                	line = self.original.readline()
+                	continue
+            	else : 
+            		if re.match('【立绘：(.*?)-(.*?)-(.*?)】', line):  # 匹配场景配置
+            			listofcharac = re.findall('【立绘：(.*?)-(.*?)-(.*?)】', line);
+            			if len(self.standing_now) > 0 :
+            				print('hide(' + self.ch_change[self.standing_now[0][0]] + ')');
+            			#print(self.ch_change['贝拉']);
+            			#print(self.ch_change[listofcharac[0][0]],self.cloth_change[listofcharac[0][1]] + '_' + self.apperence_change[listofcharac[0][2]]);
+            			print('show(' + self.ch_change[listofcharac[0][0]] + ', ' +'"' +  self.cloth_change[listofcharac[0][1]] + '_' + self.apperence_change[listofcharac[0][2]] + '"' + ', '+ 'pos_c' + ')');
+            			self.standing_now = listofcharac;
+
+            			line = self.original.readline()
+            			continue
+            	print('|>')
             # 以下为对话和旁白
             if re.match('旁白', line):
                 span = re.match('旁白', line).span()
