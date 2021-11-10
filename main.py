@@ -22,7 +22,7 @@ class Conversion:
     def lazy_execution_block(self, line: str) -> str | None:
         # todo: 延迟代码块的加载，包括立绘、场景、bgm
         # 首先进行分割
-        result = "<|\n"
+        result = "<|\n"  # 代码块开头
         blocks = re.findall('【(.*?)】', line)  # blocks为待处理的场景，类型为list
 
         # 记录已出现的东西
@@ -45,28 +45,32 @@ class Conversion:
                     result += "hide(%s)\n" % standing
                 text = block[block.index('：') + 1:] + '/'
                 if text == '无立绘/':  # 无立绘不需要显示
-                    pass
+                    print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 else None
                 elif '贝拉' in text:
-                    print(text)
                     character = re.findall('(.*?)-(.*?)-(.*?)/', text)[0]
-                    print(character)
+                    print(character) if debug > 1 else None
                     print("show(" + character_change[character[0]] + ", '" + cloth_change[character[1]] + '_' +
-                          appearance_change[character[2]] + "', pos_c)")
+                          appearance_change[character[2]] + "', pos_c)") if debug > 1 else None
+                    result += "show(" + character_change[character[0]] + ", '" + cloth_change[character[1]] + '_' + \
+                              appearance_change[character[2]] + "', pos_c)\n"
+                    print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 else None
                 else:
                     print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
             elif '场景' in block:
                 # todo: 转换场景的代码
-                pass
+                print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
             elif 'bgm' in block:
                 # todo: 转换bgm的代码
-                pass
+                print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
             elif '音效' in block:
                 # todo: 转换音效的代码
-                pass
+                print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
             else:
                 print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
                 return None
-        result += "|>\n"
+        result += "|>\n"  # 代码块结尾
+        if result != "<|\n|>\n":
+            self.result.write(result)
         return result
 
     def main(self):
@@ -81,7 +85,7 @@ class Conversion:
             if re.match('第(.*?)章', line):  # 匹配文件开头的章节名
                 span = re.match('第(.*?)章', line).span()
                 self.result.write(self.eager_execution_block(line, span))
-                # print('\033[32mSUCCESS\033[0m | 提前代码块：%s' % line) if debug > 0 else None
+                print('\033[32mSUCCESS\033[0m | 提前代码块：%s' % line) if debug > 0 else None
                 line = self.original.readline()
                 continue
             if re.match('【(.*?)】', line):  # 匹配场景配置
