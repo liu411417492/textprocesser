@@ -8,6 +8,10 @@ class Conversion:
         self.original = open('original.txt', 'r', encoding='utf-8')
         self.result = open('result.txt', 'w+', encoding='utf-8')
         self.line_num = 0  # 统计行数
+        # 记录已出现的东西
+        self.backgrounds: list[str] = []
+        self.BGMs: list[str] = []
+        self.standings: list[str] = []
 
     @staticmethod
     def eager_execution_block(line: str, span: tuple[int, int]) -> str:
@@ -25,11 +29,6 @@ class Conversion:
         result = "<|\n"  # 代码块开头
         blocks = re.findall('【(.*?)】', line)  # blocks为待处理的场景，类型为list
 
-        # 记录已出现的东西
-        backgrounds: list[str] = []
-        bgms: list[str] = []
-        standings: list[str] = []
-
         # 立绘部分
         character_change = {'贝拉': 'Bella', '向晚': 'Ava', '珈乐': 'Carol', '嘉然': 'Diana', '乃琳': 'Queen',
                             '阿草': 'Acao', '男人': 'Man', '女人': 'Women', '男孩': 'Boy', '女孩': 'Girl'}
@@ -41,9 +40,10 @@ class Conversion:
         for block in blocks:
             if '立绘' in block:
                 # todo: 目前只能转换贝拉的代码，其余部分需要改进
-                for standing in standings:  # 先将不用的立绘隐藏
+                for standing in self.standings:  # 先将不用的立绘隐藏
                     result += "hide(%s)\n" % standing
-                text = block[block.index('：') + 1:] + '/'
+                    self.standings = []
+                text = block[block.index('：') + 1:] + '/'  # 末尾添加符号方便匹配
                 if text == '无立绘/':  # 无立绘不需要显示
                     print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 else None
                 elif '贝拉' in text:
@@ -53,13 +53,14 @@ class Conversion:
                           appearance_change[character[2]] + "', pos_c)") if debug > 1 else None
                     result += "show(" + character_change[character[0]] + ", '" + cloth_change[character[1]] + '_' + \
                               appearance_change[character[2]] + "', pos_c)\n"
+                    self.standings.append(character_change[character[0]])
                     print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 else None
                 else:
                     print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
             if '场景' in block:
                 # todo: 转换场景的代码
                 print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
-            if 'bgm' in block:
+            if 'BGM' in block:
                 # todo: 转换bgm的代码
                 print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
             if '音效' in block:
@@ -67,7 +68,6 @@ class Conversion:
                 print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
             else:
                 print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
-                return None
         result += "|>\n"  # 代码块结尾
         if result != "<|\n|>\n":
             self.result.write(result)
@@ -90,7 +90,7 @@ class Conversion:
                 continue
             if re.match('【(.*?)】', line):  # 匹配场景配置
                 a = self.lazy_execution_block(line)
-                print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 and a is not None else None
+                # print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 and a is not None else None
                 line = self.original.readline()
                 continue
             # 以下为对话和旁白
