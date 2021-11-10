@@ -35,6 +35,7 @@ class Conversion:
         cloth_change = {'常服': 'causal', '舞蹈服': 'dance', '团服': 'team', '画家': 'draw'}
         appearance_change = {'通常': 'causal', '生气': 'angry', '微笑': 'smile', '惊讶': 'surprised',
                              '失望': 'disappointed'}
+        trans = {'黑屏': 'black', '白场': 'white'}
         # self.diana_cloth = {'常服': 'causal','画家': 'draw','团服': 'team'}
 
         for block in blocks:
@@ -44,7 +45,7 @@ class Conversion:
                     result += "hide(%s)\n" % standing
                     self.standings = []
                 text = block[block.index('：') + 1:] + '/'  # 末尾添加符号方便匹配
-                text_t = block[block.index('：') + 1:]
+                #text_t = block[block.index('：') + 1:]
                 if text == '无立绘/':  # 无立绘不需要显示
                     print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 else None
                 elif re.match('(.*?)-(.*?)-(.*?)/', text):
@@ -67,9 +68,27 @@ class Conversion:
                 else:
                     #print('\033[33mWARNING\033[0m | 未完成自动转换的剧本行：%s | 第%s行' % (line, self.line_num))
                     print(text)
-            elif '场景' in block:
+            elif '转场' in block:
                 # todo: 转换场景的代码
-                print('\033[33mWARNING\033[0m | 未完成自动转换的场景剧本行：%s | 第%s行' % (line, self.line_num))
+                if re.findall('(.*?)转场',block):
+
+                	tr = re.findall('(.*?)转场',block);
+                	#print(block)
+                	print('anim:trans_fade(' + 'bg,' + trans[tr] +')') if debug > 1 else None
+                	print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 else None
+                else:
+                	print('\033[33mWARNING\033[0m | 未完成自动转换的转场剧本行：%s | 第%s行' % (line, self.line_num))
+            elif '过渡' in block:
+                # todo: 转换场景的代码
+                if re.findall('(.*?)过渡',block):
+
+                	tr = re.findall('(.*?)过渡',block);
+                	#print(block)
+                	print('anim:trans_fade(' + 'bg,' + trans[tr] +')') if debug > 1 else None
+                	print('\033[32mSUCCESS\033[0m | 延迟代码块：%s' % line) if debug > 0 else None
+                else:
+                	print('\033[33mWARNING\033[0m | 未完成自动转换的过渡剧本行：%s | 第%s行' % (line, self.line_num))
+                print('\033[33mWARNING\033[0m | 未完成自动转换的过渡场景剧本行：%s | 第%s行' % (line, self.line_num))
             elif 'BGM' in block:
                 # todo: 转换bgm的代码
                 print('\033[33mWARNING\033[0m | 未完成自动转换的BGM剧本行：%s | 第%s行' % (line, self.line_num))
