@@ -34,8 +34,14 @@ class Conversion:
                             '阿草': 'Acao', '成年男人的剪影': 'Man', '成年女人的剪影': 'Women', '女人的剪影': 'Women',
                             '小男孩的剪影': 'Boy', '小女孩的剪影': 'Girl'}
         cloth_change = {'常服': 'causal', '舞蹈服': 'dance', '团服': 'team', '画家': 'draw'}
+<<<<<<< HEAD
         appearance_change = {'通常': 'causal', '生气': 'angry', '微笑': 'smile', '惊讶': 'surprised', '失望': 'disappointed'}
         trans = {'黑屏': 'black', '白场': 'white'}
+=======
+        appearance_change = {'通常': 'causal', '生气': 'angry', '微笑': 'smile', '惊讶': 'surprised',
+                             '失望': 'disappointed','50%灰度': 'halfgray'}
+        trans = {'黑屏': 'black', '白场': 'white','溶解': 'melt'}
+>>>>>>> 99da4e00a2476825ff7ff726b9a46e080cec213f
         # self.diana_cloth = {'常服': 'causal','画家': 'draw','团服': 'team'}
 
         for block in blocks:
