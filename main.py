@@ -1,6 +1,6 @@
 import re
 
-debug = 1  # 0关闭调试，1仅显示转换为代码块的部分，2显示所有转换过程
+debug = 2  # 0关闭调试，1仅显示转换为代码块的部分，2显示所有转换过程
 
 
 class Conversion:
@@ -13,6 +13,7 @@ class Conversion:
         self.BGMs: list[str] = []
         self.standings: list[str] = []
         self.CGs: list[str] = []
+        self.BGs: list[str] = []
 
     @staticmethod
     def eager_execution_block(line: str, span: tuple[int, int]) -> str:
@@ -37,7 +38,9 @@ class Conversion:
                             '长发珈乐': 'Carol'}  # todo: 此行需改进
         cloth_change = {'常服': 'causal', '舞蹈服': 'dance', '团服': 'team', '画家': 'draw', '病服': 'sick'}
         appearance_change = {'通常': 'causal', '生气': 'angry', '微笑': 'smile', '惊讶': 'surprised', '失望': 'disappointed'}
-        trans = {'黑屏': 'black', '黑场': 'black', '白场': 'white', '溶解': 'melt'}
+        trans = {'黑屏': "'bg_000_black'", '黑场': "'bg_000_black'", '白场': "'bg_000_white'", '溶解': "'bg_000_melt'"}
+        CG_trans= {'嘉然抱着贝拉哭泣' : 'cg_002_贝贝嘉哭', '穿着常服坐在地上绝望的贝拉': 'cg_007_贝常服哭', '穿着团服坐在地上绝望的贝拉': 'cg_009_贝团服哭', '墙上的海报': 'cg_006_嘉然海报', '嘉然画的嘉心糖': 'cg_004_嘉然壁画', '贝拉-CG5': 'cg_010_贝靠墙'}
+        bg_trans= {'画展' : 'bg_002_画展', '舞蹈室-黄昏（色调更暗）' : 'bg_005_舞蹈室_夜晚', '展览馆外景' : 'bg_002_画展', '舞蹈室-黄昏' : 'bg_001_舞蹈室', '地铁站' : 'bg_003_地铁站', '夜晚的病房' : 'bg_009_医院病床', '夜晚的大街' : 'bg_007_夜晚的大街' }
         # self.diana_cloth = {'常服': 'causal','画家': 'draw','团服': 'team'}
 
         for block in blocks:
@@ -98,12 +101,10 @@ class Conversion:
             elif '场景' in block:
                 # 转换场景的代码
                 text = block[block.index('：') + 1:]
+                self.BGs.append(text);
+                text = "'" + bg_trans[text] + "'";
                 result += "show(bg, %s, {0, 0, 1.4})\n" % text
-                print('\033[32mSUCCESS\033[0m | 延迟代码块：%s -- %s' % (line, block)) if debug > 0 else None
-            elif 'CG' in block:
-                # 转换cg的代码
-                text = block[block.index('：') + 1:]
-                result += "show(bg, %s)\n" % text
+                
                 print('\033[32mSUCCESS\033[0m | 延迟代码块：%s -- %s' % (line, block)) if debug > 0 else None
             elif 'BGM' in block:
                 # 转换bgm的代码
@@ -114,17 +115,19 @@ class Conversion:
                         self.BGMs = []
                 else:
                     result += "play(bgm, '%s')\n" % text
-                    self.BGMs.append(text)
+                    self.BGMs.append(text) 
                 print('\033[32mSUCCESS\033[0m | 延迟代码块：%s -- %s' % (line, block)) if debug > 0 else None
             elif 'CG' in block:
                 # todo: 转换CG的代码
                 text = block[block.find('：') + 1:]
                 if re.match('(.*?)-(.*?)灰度',text):
                 	list = re.findall('(.*?)-(.*?)灰度',text);
-                	print(list[0])
-                	print('show(bg ,' + list[0][0] + ')');
+                	#print(list[0])
+                	self.CGs.append(list[0][0])
+                	print('show(bg ,' + "'" + CG_trans[list[0][0]] + "'" +', '+ 'pos_default, {0.299, 0.587, 0.114})') if debug > 0 else None;
+                	result += ('show(bg ,' + "'" + CG_trans[list[0][0]] + "'"+', '+ 'pos_default, {0.299, 0.587, 0.114})' + "\n"  );
                 else:
-                    result += "show(bg, '%s')\n" % text
+                    result += "show(bg, '%s')\n" % CG_trans[text]
                     self.CGs.append(text)
                 print('\033[32mSUCCESS\033[0m | 延迟代码块：%s -- %s' % (line, block)) if debug > 0 else None
             elif '音效' in block:
@@ -178,6 +181,10 @@ class Conversion:
                 continue
         self.original.close()
         self.result.close()
+        self.CGs = list(set(self.CGs))
+        self.BGs = list(set(self.BGs))
+        print(self.CGs)
+        print(self.BGs)
         return 0
 
 
