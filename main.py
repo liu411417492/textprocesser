@@ -12,6 +12,7 @@ class Conversion:
         self.backgrounds: list[str] = []
         self.BGMs: list[str] = []
         self.standings: list[str] = []
+        self.CGs: list[str] = []
 
     @staticmethod
     def eager_execution_block(line: str, span: tuple[int, int]) -> str:
@@ -102,6 +103,17 @@ class Conversion:
                 else:
                     result += "play(bgm, '%s')\n" % text
                     self.BGMs.append(text)
+                print('\033[32mSUCCESS\033[0m | 延迟代码块：%s -- %s' % (line, block)) if debug > 0 else None
+            elif 'CG' in block:
+                # todo: 转换CG的代码
+                text = block[block.find('：') + 1:]
+                if re.match('(.*?)-(.*?)灰度',text):
+                	list = re.findall('(.*?)-(.*?)灰度',text);
+                	print(list[0])
+                	print('show(bg ,' + list[0][0] + ')');
+                else:
+                    result += "show(bg, '%s')\n" % text
+                    self.CGs.append(text)
                 print('\033[32mSUCCESS\033[0m | 延迟代码块：%s -- %s' % (line, block)) if debug > 0 else None
             elif '音效' in block:
                 text = block[block.find('：') + 1:]
