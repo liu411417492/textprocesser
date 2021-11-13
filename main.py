@@ -32,6 +32,7 @@ class Conversion:
         blocks = re.findall('【(.*?)】', line)  # blocks为待处理的场景，类型为list
 
         # 立绘部分
+        last_standing = [];
         character_change = {'贝拉': 'Bella', '向晚': 'Ava', '珈乐': 'Carol', '嘉然': 'Diana', '乃琳': 'Queen', '阿草': 'Acao',
                             '成年男人的剪影': 'Man', '男人的剪影': 'Man', '成年女人的剪影': 'Women', '女人的剪影': 'Women',
                             '小男孩的剪影': 'Boy', '小女孩的剪影': 'Girl', '医护人员的剪影': 'Medical',
@@ -56,26 +57,47 @@ class Conversion:
                     # if(character_change[text_t])
                     character = re.findall('(.*?)-(.*?)-(.*?)/', text)[0]
                     if character[2] == '50%灰度':  # 如果第三个值是50%灰度，添加color参数
+                        if len(last_standing) != 0:
+                    		#hide(last_standing)
+                    	    result += "hide(%s)\n" % last_standing[0];
+                    	    last_standing = []
                         result += "show(%s, '%s', pos_c, {0.299, 0.587, 0.114})\n" \
                                   % (character_change[character[0]], cloth_change[character[1]])
+                        last_standing.append(character_change[character[0]]);
+
                     else:
                         print(character) if debug > 1 else None
                         print("show(" + character_change[character[0]] + ", '" + cloth_change[character[1]] + '_' +
                               appearance_change[character[2]] + "', pos_c)") if debug > 1 else None
+                        if len(last_standing) != 0:
+                    		#hide(last_standing)
+                    	    result += "hide(%s)\n" % last_standing[0];
+                    	    last_standing = []
                         result += "show(%s, '%s_%s', pos_c)\n" \
                                   % (character_change[character[0]], cloth_change[character[1]],
                                      appearance_change[character[2]])
+                        last_standing.append(character_change[character[0]]);
                     self.standings.append(character_change[character[0]])
                     print('\033[32mSUCCESS\033[0m | 延迟代码块：%s -- %s' % (line, block)) if debug > 0 else None
                 # 下面是次要人物的匹配
                 elif re.match('(.*?)-50%灰度/', text):  # 如果有50%灰度，添加color参数
                     character = re.findall('(.*?)-', text)
+                    if len(last_standing) != 0:
+                    		#hide(last_standing)
+                    	    result += "hide(%s)\n" % last_standing[0];
+                    	    last_standing = []
                     result += "show(%s, 'default', pos_c, {0.299, 0.587, 0.114})\n" % (character_change[character[0]])
+                    last_standing.append(character_change[character[0]]);
                 elif re.match('(.*?)/', text):
                     character = re.findall('(.*?)/', text)
                     print(character) if debug > 1 else None
                     print("show(%s, 'default', pos_c)\n" % (character_change[character[0]])) if debug > 1 else None
+                    if len(last_standing) != 0:
+                    		#hide(last_standing)
+                    	    result += "hide(%s)\n" % last_standing[0];
+                    	    last_standing = []
                     result += "show(%s, 'default', pos_c)\n" % (character_change[character[0]])
+                    last_standing.append(character_change[character[0]]);
                     self.standings.append(character_change[character[0]])
                     print('\033[32mSUCCESS\033[0m | 延迟代码块：%s -- %s' % (line, block)) if debug > 0 else None
                 else:
