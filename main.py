@@ -41,7 +41,7 @@ class Conversion:
                             '成年男人的剪影': 'Man', '男人的剪影': 'Man', '成年女人的剪影': 'Women', '女人的剪影': 'Women',
                             '小男孩的剪影': 'Boy', '小女孩的剪影': 'Girl', '医护人员的剪影': 'Medical',
                             '长发珈乐': 'Carol'}  # todo: 此行需改进
-        cloth_change = {'常服': 'causal', '舞蹈服': 'dance', '团服': 'team', '画家': 'draw', '病服': 'sick'}
+        cloth_change = {'常服': 'causal', '舞蹈服': 'dance', '团服': 'team', '画家': 'draw', '病服': 'sick', '礼服': 'lifu', '律师服': 'lawyer'}
         appearance_change = {'通常': 'causal', '生气': 'angry', '微笑': 'smile', '惊讶': 'surprised', '失望': 'disappointed'}
         trans = {'黑屏': "'bg_000_black'", '黑场': "'bg_000_black'", '白场': "'bg_000_white'", '溶解': "'bg_000_melt'"}
         CG_trans = {'嘉然抱着贝拉哭泣': 'cg_002_贝贝嘉哭', '穿着常服坐在地上绝望的贝拉': 'cg_007_贝常服哭', '穿着团服坐在地上绝望的贝拉': 'cg_009_贝团服哭',
